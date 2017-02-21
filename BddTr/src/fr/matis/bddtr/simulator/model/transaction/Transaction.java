@@ -4,7 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Transaction {
+	private static int nextId;
+	private int id;
 	private List<Operation> operations = new ArrayList<Operation>();
+
+	public Transaction() {
+		super();
+		this.id = nextId++;
+	}
 
 	public List<Operation> getOperations() {
 		return operations;
@@ -15,7 +22,7 @@ public class Transaction {
 	}
 
 	public Status getStatus(){
-		Status status = getStatus().TODO;
+		Status status = Status.TODO;
 		for(Operation operation : operations){
 			status = status.append(operation.getStatus());
 		}
@@ -25,10 +32,16 @@ public class Transaction {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Transaction [operations=");
+		builder.append("Transaction [id=");
+		builder.append(id);
+		builder.append(", operations=");
 		builder.append(operations);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public int getId() {
+		return id;
 	}
 	
 }

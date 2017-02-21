@@ -3,12 +3,15 @@ package fr.matis.bddtr.simulator.model.transaction;
 import fr.matis.bddtr.simulator.model.data.AbstractData;
 
 public class Operation {
+	private static int nextId;
+	private int id;
 	private OperationType type;
 	private AbstractData data;
 	private Status status = Status.TODO;
 
 	public Operation(OperationType type, AbstractData data) {
 		super();
+		this.id = nextId++;
 		this.type = type;
 		this.data = data;
 	}
@@ -32,7 +35,9 @@ public class Operation {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Operation [type=");
+		builder.append("Operation [id=");
+		builder.append(id);
+		builder.append(", type=");
 		builder.append(type);
 		builder.append(", data=");
 		builder.append(data);
@@ -40,6 +45,10 @@ public class Operation {
 		builder.append(status);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public int getId() {
+		return id;
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import fr.matis.bddtr.simulator.api.ServerAPI;
 import fr.matis.bddtr.simulator.model.SimulationConfig;
 import fr.matis.bddtr.simulator.model.SimulationContents;
 import fr.matis.bddtr.simulator.model.data.AbstractData;
@@ -20,15 +21,24 @@ public class SimulatorProcess {
 	private SimulationConfig config;
 	private long nextUserTransaction;
 	private Random random = new Random();
+	private ServerAPI server;
 	
 	public SimulatorProcess(SimulationConfig config) {
 		super();
+		this.server = new ServerAPI(contents, this);
 		this.config = config;
 		this.nextUserTransaction = PoissonUtil.nextEvent(config.getPoissonLambda());
-		contents.fill(config);
+		contents.fill(config, server);
 	}
 
-	public long processStep(){
+	public void start() {
+		processStep();
+	}
+	
+	public void processStep(){
+		if(stamp == config.getSimulationDuration()){
+			return;
+		}
 		if(nextUserTransaction == stamp){
 			createUserTransaction();
 			nextUserTransaction = stamp+PoissonUtil.nextEvent(config.getPoissonLambda()); 
@@ -39,14 +49,15 @@ public class SimulatorProcess {
 			}
 		}
 		stamp++;
-		return stamp;
+		server.doStep();
 	}
 
 	private void updateRealTimeData(RealTimeData data) {
 		Transaction transaction = new Transaction();
 		transaction.addOperation(new Operation(OperationType.REALTIME_UPDATE, data));
-		System.out.println(stamp+" > "+transaction);
+		contents.addTransaction(transaction);
 		data.setStamp(stamp);
+		server.sendTransaction(transaction);
 	}
 
 	private void createUserTransaction() {
@@ -61,7 +72,8 @@ public class SimulatorProcess {
 			}
 			transaction.addOperation(new Operation(type, data));
 		}
-		System.out.println(stamp+" > "+transaction);
+		contents.addTransaction(transaction);
+		server.sendTransaction(transaction);
 	}
 
 	private RealTimeData getRandomRealTimeData() {
@@ -96,9 +108,10 @@ public class SimulatorProcess {
 		int[] realTimeDurationRange = {10,50};
 		SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
 		SimulatorProcess process = new SimulatorProcess(config);
-		
-		for(long i=0; i<config.getSimulationDuration();){
-			i = process.processStep();
-		}
+		process.start();
+//		for(long i=0; i<config.getSimulationDuration();){
+//			i = process.processStep();
+//		}
 	}
+
 }
