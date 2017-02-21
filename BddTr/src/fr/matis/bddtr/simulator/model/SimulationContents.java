@@ -9,10 +9,12 @@ import java.util.Random;
 import fr.matis.bddtr.simulator.api.ServerAPI;
 import fr.matis.bddtr.simulator.model.data.BasicData;
 import fr.matis.bddtr.simulator.model.data.RealTimeData;
+import fr.matis.bddtr.simulator.model.transaction.Operation;
 import fr.matis.bddtr.simulator.model.transaction.Transaction;
 
 public class SimulationContents {
 	Map<Integer, Transaction> transactions = new HashMap<Integer, Transaction>();
+	Map<Integer, Operation> operations = new HashMap<Integer, Operation>();
 	List<BasicData> basicDatas = new ArrayList<BasicData>();
 	List<RealTimeData> realTimeDatas = new ArrayList<RealTimeData>();
 	private Random random = new Random();
@@ -52,6 +54,13 @@ public class SimulationContents {
 
 	public void addTransaction(Transaction transaction) {
 		transactions.put(transaction.getId(), transaction);
+		for(Operation op : transaction.getOperations()){
+			operations.put(op.getId(), op);
+		}
+	}
+
+	public Operation getOperation(int opId) {
+		return operations.get(opId);
 	}
 
 }
