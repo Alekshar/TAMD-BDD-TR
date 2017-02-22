@@ -2,6 +2,7 @@ package fr.matis.bddtr.simulator.api;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 import fr.matis.bddtr.simulator.client.SimulatorProcess;
 import fr.matis.bddtr.simulator.model.SimulationContents;
@@ -40,7 +41,8 @@ public class ServerAPI {
 			@Override
 			public void run() {
 				if(!operations.isEmpty()){
-					operationUpdate(operations.poll().getId(), Status.DONE);	
+					operationUpdate(operations.poll().getId(), 
+							new Random().nextBoolean() ? Status.DONE : Status.REFUSED);	
 				}
 				stepDone();
 			}

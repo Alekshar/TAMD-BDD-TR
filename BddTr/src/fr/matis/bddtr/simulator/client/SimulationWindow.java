@@ -2,6 +2,7 @@ package fr.matis.bddtr.simulator.client;
 
 import java.awt.EventQueue;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -11,7 +12,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
 import fr.matis.bddtr.simulator.model.SimulationConfig;
+import fr.matis.bddtr.simulator.model.SimulationContentListener;
+import fr.matis.bddtr.simulator.model.SimulationContents;
 import fr.matis.bddtr.simulator.model.transaction.OperationType;
+import fr.matis.bddtr.simulator.model.transaction.Status;
+import fr.matis.bddtr.simulator.model.transaction.Transaction;
+import fr.matis.bddtr.simulator.model.transaction.TransactionType;
+
 import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -70,7 +77,7 @@ public class SimulationWindow {
 	private void initialize(SimulatorProcess process) {
 		frmSimulationDisplay = new JFrame();
 		frmSimulationDisplay.setTitle("Simulation display");
-		frmSimulationDisplay.setBounds(100, 100, 450, 300);
+		frmSimulationDisplay.setBounds(100, 100, 501, 300);
 		frmSimulationDisplay.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JPanel panel = new JPanel();
@@ -87,18 +94,75 @@ public class SimulationWindow {
 		panel.add(panel_1, BorderLayout.NORTH);
 		
 		int step = process.isStepByStep() ? 0 : process.getConfig().getSimulationDuration();
-		JLabel lblCurrentStep = new JLabel("Current step : "+step);
-		panel_1.add(lblCurrentStep);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_2 = new JPanel();
+		panel_1.add(panel_2, BorderLayout.NORTH);
 		
 		JButton btnNextStep = new JButton("Next step");
+		panel_2.add(btnNextStep);
 		btnNextStep.setEnabled(process.isStepByStep());
+		JLabel lblCurrentStep = new JLabel("Current step : "+step);
+		panel_2.add(lblCurrentStep);
+		
+		JPanel panel_3 = new JPanel();
+		panel_1.add(panel_3, BorderLayout.SOUTH);
+		
+		JLabel lblUserRatio = new JLabel("Refused user ratio : 0");
+		panel_3.add(lblUserRatio);
+		
+		JLabel lblUpdateRatio = new JLabel("Refused update ratio : 0");
+		panel_3.add(lblUpdateRatio);
+		
+		JLabel lblGlobal = new JLabel("Global : 0");
+		panel_3.add(lblGlobal);
 		btnNextStep.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				process.processStep();
 				lblCurrentStep.setText("current step : "+process.getStamp());
 			}
 		});
-		panel_1.add(btnNextStep);
+		process.getContents().addListener(new  SimulationContentListener() {
+			@Override
+			public void contentChanged(SimulationContents contents) {
+				List<Transaction> transactions = contents.getTransactions();
+				int[] user = {0, 0};  //refused, refused+done
+				int[] update = {0, 0};  //refused, refused+done
+				int[] total = {0, 0};  //refused, refused+done
+				for(Transaction tr : transactions){
+					if(tr.getType() == TransactionType.REALTIME_UPDATE){
+						if(tr.getStatus() == Status.DONE){
+							update[1]++;
+							total[1]++;
+						} else if(tr.getStatus() == Status.REFUSED){
+							update[0]++;
+							update[1]++;
+							total[0]++;
+							total[1]++;
+						}
+					} else {
+						if(tr.getStatus() == Status.DONE){
+							user[1]++;
+							total[1]++;
+						} else if(tr.getStatus() == Status.REFUSED){
+							user[0]++;
+							user[1]++;
+							total[0]++;
+							total[1]++;
+						}
+					}
+				}
+				if(user[1] != 0){
+					lblUserRatio.setText("Refused user ratio : "+String.format("%.2f", (user[0]*1./user[1])));
+				}
+				if(update[1] != 0){
+					lblUpdateRatio.setText("Refused update ratio : "+String.format("%.2f", (update[0]*1./update[1])));
+				}
+				if(total[1] != 0){
+					lblGlobal.setText("Global : "+String.format("%.2f", (total[0]*1./total[1])));
+				}
+			}
+		});
 	}
 
 }

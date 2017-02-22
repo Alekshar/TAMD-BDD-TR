@@ -3,11 +3,12 @@ package fr.matis.bddtr.simulator.client;
 import javax.swing.table.DefaultTableModel;
 
 import fr.matis.bddtr.simulator.model.SimulationConfig;
+import fr.matis.bddtr.simulator.model.SimulationContentListener;
 import fr.matis.bddtr.simulator.model.SimulationContents;
 import fr.matis.bddtr.simulator.model.transaction.Operation;
 import fr.matis.bddtr.simulator.model.transaction.Transaction;
 
-public class SimulationTableModel extends DefaultTableModel {
+public class SimulationTableModel extends DefaultTableModel implements SimulationContentListener {
 	private static final long serialVersionUID = -7314372016872242028L;
 	private SimulationContents contents;
 	private int columns;
@@ -15,7 +16,7 @@ public class SimulationTableModel extends DefaultTableModel {
 	public SimulationTableModel(SimulationContents contents, SimulationConfig config) {
 		super();
 		this.contents = contents;
-		contents.setListeningModel(this);
+		contents.addListener(this);
 		this.columns = 1+config.getOperationsByTransactionRange()[1];
 	}
 	
@@ -34,8 +35,6 @@ public class SimulationTableModel extends DefaultTableModel {
 		switch(arg0){
 		case 0:
 			return "transaction";
-		case 1:
-			return "status";
 		default:
 			return "op"+(arg0);
 		}
@@ -76,6 +75,11 @@ public class SimulationTableModel extends DefaultTableModel {
 
 	@Override
 	public void setValueAt(Object arg0, int arg1, int arg2) {
+	}
+
+	@Override
+	public void contentChanged(SimulationContents contents) {
+		this.fireTableDataChanged();
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import fr.matis.bddtr.simulator.api.ServerAPI;
@@ -11,15 +12,17 @@ import fr.matis.bddtr.simulator.client.SimulationTableModel;
 import fr.matis.bddtr.simulator.model.data.BasicData;
 import fr.matis.bddtr.simulator.model.data.RealTimeData;
 import fr.matis.bddtr.simulator.model.transaction.Operation;
+import fr.matis.bddtr.simulator.model.transaction.Status;
 import fr.matis.bddtr.simulator.model.transaction.Transaction;
+import fr.matis.bddtr.simulator.model.transaction.TransactionType;
 
 public class SimulationContents {
-	Map<Integer, Transaction> transactions = new HashMap<Integer, Transaction>();
-	Map<Integer, Operation> operations = new HashMap<Integer, Operation>();
+	List<Transaction> transactions = new ArrayList<Transaction>();
+	List<Operation> operations = new ArrayList<Operation>();
 	List<BasicData> basicDatas = new ArrayList<BasicData>();
 	List<RealTimeData> realTimeDatas = new ArrayList<RealTimeData>();
 	private Random random = new Random();
-	private SimulationTableModel listeningModel;
+	private List<SimulationContentListener> listeners = new ArrayList<SimulationContentListener>();
 
 	public void fill(SimulationConfig config, ServerAPI server) {
 		for(int i=0, count=config.getBasicDataCount(); i<count; i++){
@@ -55,9 +58,11 @@ public class SimulationContents {
 	}
 
 	public void addTransaction(Transaction transaction) {
-		transactions.put(transaction.getId(), transaction);
+		transactions.add(transaction);
+		transaction.setId(transactions.size()-1);
 		for(Operation op : transaction.getOperations()){
-			operations.put(op.getId(), op);
+			operations.add(op);
+			op.setId(operations.size()-1);
 		}
 		fireChange();
 	}
@@ -66,18 +71,19 @@ public class SimulationContents {
 		return operations.get(opId);
 	}
 
-	public Map<Integer, Transaction> getTransactions() {
+	public List<Transaction> getTransactions() {
 		return transactions;
 	}
-	
-	public void setListeningModel(SimulationTableModel model){
-		this.listeningModel = model;
-	}
-	
+
 	public void fireChange(){
-		if(listeningModel != null){
-			listeningModel.fireTableDataChanged();
+		for(SimulationContentListener listener : listeners){
+			listener.contentChanged(this);
 		}
 	}
+
+	public void addListener(SimulationContentListener simulationContentListener) {
+		listeners.add(simulationContentListener);
+	}
+
 
 }
