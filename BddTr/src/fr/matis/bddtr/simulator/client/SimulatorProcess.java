@@ -91,6 +91,9 @@ public class SimulatorProcess {
 	private int generateOperationCount() {
 		int minOperations = config.getOperationsByTransactionRange()[0];
 		int maxOperations = config.getOperationsByTransactionRange()[1] - minOperations;
+		if(maxOperations == 0){
+			return minOperations;
+		}
 		return minOperations + random.nextInt(maxOperations);
 	}
 
@@ -109,9 +112,6 @@ public class SimulatorProcess {
 		SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
 		SimulatorProcess process = new SimulatorProcess(config);
 		process.start();
-//		for(long i=0; i<config.getSimulationDuration();){
-//			i = process.processStep();
-//		}
 	}
 
 }

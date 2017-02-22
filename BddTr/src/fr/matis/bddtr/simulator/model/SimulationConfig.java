@@ -1,5 +1,6 @@
 package fr.matis.bddtr.simulator.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +48,27 @@ public class SimulationConfig {
 	}
 	public int[] getRealTimeDurationRange() {
 		return realTimeDurationRange;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SimulationConfig [operationDurations=");
+		builder.append(operationDurations);
+		builder.append(", simulationDuration=");
+		builder.append(simulationDuration);
+		builder.append(", poissonLambda=");
+		builder.append(poissonLambda);
+		builder.append(", realTimeDataCount=");
+		builder.append(realTimeDataCount);
+		builder.append(", basicDataCount=");
+		builder.append(basicDataCount);
+		builder.append(", operationsByTransactionRange=");
+		builder.append(Arrays.toString(operationsByTransactionRange));
+		builder.append(", realTimeDurationRange=");
+		builder.append(Arrays.toString(realTimeDurationRange));
+		builder.append("]");
+		return builder.toString();
 	}
 	
 	
