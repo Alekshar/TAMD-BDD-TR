@@ -5,8 +5,7 @@ import java.util.Random;
 public enum OperationType {
 	BASIC_WRITE,
 	BASIC_READ,
-	REALTIME_READ,
-	REALTIME_UPDATE;
+	REALTIME_UPDATE, REALTIME_READ;
 
 	static Random random = new Random();
 	

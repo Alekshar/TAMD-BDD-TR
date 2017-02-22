@@ -22,15 +22,21 @@ public class SimulatorProcess {
 	private long nextUserTransaction;
 	private Random random = new Random();
 	private ServerAPI server;
-	
+	private boolean stepByStep;
+
 	public SimulatorProcess(SimulationConfig config) {
+		this(config, false);
+	}
+
+	public SimulatorProcess(SimulationConfig config, boolean stepByStep) {
 		super();
 		this.server = new ServerAPI(contents, this);
+		this.stepByStep = stepByStep;
 		this.config = config;
 		this.nextUserTransaction = PoissonUtil.nextEvent(config.getPoissonLambda());
 		contents.fill(config, server);
 	}
-
+	
 	public void start() {
 		processStep();
 	}
@@ -50,6 +56,12 @@ public class SimulatorProcess {
 		}
 		stamp++;
 		server.doStep();
+	}
+	
+	public void stepDone(){
+		if(!stepByStep){
+			processStep();
+		}
 	}
 
 	private void updateRealTimeData(RealTimeData data) {
@@ -90,10 +102,7 @@ public class SimulatorProcess {
 
 	private int generateOperationCount() {
 		int minOperations = config.getOperationsByTransactionRange()[0];
-		int maxOperations = config.getOperationsByTransactionRange()[1] - minOperations;
-		if(maxOperations == 0){
-			return minOperations;
-		}
+		int maxOperations = config.getOperationsByTransactionRange()[1] - minOperations + 1;
 		return minOperations + random.nextInt(maxOperations);
 	}
 
@@ -112,6 +121,22 @@ public class SimulatorProcess {
 		SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
 		SimulatorProcess process = new SimulatorProcess(config);
 		process.start();
+	}
+
+	public SimulationContents getContents() {
+		return contents;
+	}
+
+	public SimulationConfig getConfig() {
+		return config;
+	}
+
+	public long getStamp() {
+		return stamp;
+	}
+
+	public boolean isStepByStep() {
+		return stepByStep;
 	}
 
 }

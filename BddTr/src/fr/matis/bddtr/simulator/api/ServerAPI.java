@@ -58,12 +58,13 @@ public class ServerAPI {
 	
 	public void operationUpdate(int opId, Status status){
 		Operation operation = contents.getOperation(opId);
-		operation .setStatus(status);
+		operation.setStatus(status);
+		contents.fireChange();
 		System.out.println("operation updated : "+operation);
 	}
 
 	public void stepDone(){
-		process.processStep();
+		process.stepDone();
 	}
 	
 }

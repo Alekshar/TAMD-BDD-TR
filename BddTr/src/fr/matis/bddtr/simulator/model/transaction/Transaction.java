@@ -43,5 +43,12 @@ public class Transaction {
 	public int getId() {
 		return id;
 	}
+
+	public String getType() {
+		if(OperationType.REALTIME_UPDATE.equals(operations.get(0).getType())){
+			return "realtime_update";
+		}
+		return "user";
+	}
 	
 }

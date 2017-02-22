@@ -3,6 +3,7 @@ package fr.matis.bddtr.simulator.model.data;
 public class RealTimeData extends AbstractData {
 	private long stamp;
 	private int duration;
+	private int updatePeriod;
 	private static final double UPDATE_PERIOD = 2./3.;
 
 	public RealTimeData(int duration) {
@@ -13,6 +14,10 @@ public class RealTimeData extends AbstractData {
 		super();
 		this.stamp = stamp;
 		this.duration = duration;
+		this.updatePeriod = (int) (duration*UPDATE_PERIOD);
+		if(this.updatePeriod == 0){
+			this.updatePeriod = 1;
+		}
 	}
 	
 	public long getStamp() {
@@ -25,7 +30,7 @@ public class RealTimeData extends AbstractData {
 		return duration;
 	}
 	public long getNextUpdateStamp() {
-		return (long) (stamp+duration*UPDATE_PERIOD) ;
+		return (long) (stamp+updatePeriod) ;
 	}
 
 	@Override

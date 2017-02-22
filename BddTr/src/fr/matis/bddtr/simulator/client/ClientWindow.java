@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
 
 public class ClientWindow {
 
@@ -182,7 +183,7 @@ public class ClientWindow {
 		panel.add(lblPeriodOfRealtime, gbc_lblPeriodOfRealtime);
 		
 		JSpinner spinMinRtPeriod = new JSpinner();
-		spinMinRtPeriod.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+		spinMinRtPeriod.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
 		GridBagConstraints gbc_spinMinRtPeriod = new GridBagConstraints();
 		gbc_spinMinRtPeriod.fill = GridBagConstraints.HORIZONTAL;
 		gbc_spinMinRtPeriod.insets = new Insets(0, 0, 5, 5);
@@ -208,7 +209,7 @@ public class ClientWindow {
 				spinMaxRtPeriod.setModel(new SpinnerNumberModel(maxValue, value, null, new Integer(1)));
 			}
 		});
-		spinMaxRtPeriod.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+		spinMaxRtPeriod.setModel(new SpinnerNumberModel(new Integer(100), new Integer(1), null, new Integer(1)));
 		GridBagConstraints gbc_spinMaxRtPeriod = new GridBagConstraints();
 		gbc_spinMaxRtPeriod.fill = GridBagConstraints.HORIZONTAL;
 		gbc_spinMaxRtPeriod.insets = new Insets(0, 0, 5, 0);
@@ -281,6 +282,20 @@ public class ClientWindow {
 		panel.add(spinRtUpdate, gbc_spinRtUpdate);
 		
 		JButton btnStartSimulation = new JButton("Start simulation");
+
+		JCheckBox chkStepByStep = new JCheckBox("step by step mode");
+		GridBagConstraints gbc_chkStepByStep = new GridBagConstraints();
+		gbc_chkStepByStep.insets = new Insets(0, 0, 0, 5);
+		gbc_chkStepByStep.gridx = 1;
+		gbc_chkStepByStep.gridy = 9;
+		panel.add(chkStepByStep, gbc_chkStepByStep);
+		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
+		gbc_btnStartSimulation.anchor = GridBagConstraints.EAST;
+		gbc_btnStartSimulation.gridwidth = 3;
+		gbc_btnStartSimulation.gridx = 2;
+		gbc_btnStartSimulation.gridy = 9;
+		panel.add(btnStartSimulation, gbc_btnStartSimulation);
+		
 		btnStartSimulation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Map<OperationType, Integer> operationDurations = new HashMap<>();
@@ -301,17 +316,17 @@ public class ClientWindow {
 						(int) spinMaxRtPeriod.getValue()
 					};
 				SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
-				SimulatorProcess process = new SimulatorProcess(config);
-				process.start();
+				SimulatorProcess process = new SimulatorProcess(config, chkStepByStep.isSelected());
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						process.start();
+					}
+				}).start();
+				SimulationWindow window = new SimulationWindow(process);
 			}
 		});
-		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
-		gbc_btnStartSimulation.anchor = GridBagConstraints.EAST;
-		gbc_btnStartSimulation.gridwidth = 3;
-		gbc_btnStartSimulation.insets = new Insets(0, 0, 0, 5);
-		gbc_btnStartSimulation.gridx = 2;
-		gbc_btnStartSimulation.gridy = 9;
-		panel.add(btnStartSimulation, gbc_btnStartSimulation);
+		
 	}
 
 }
