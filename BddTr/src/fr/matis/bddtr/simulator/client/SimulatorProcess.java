@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import fr.matis.bddtr.model.SimulationConfig;
+import fr.matis.bddtr.model.SimulationContents;
+import fr.matis.bddtr.model.data.AbstractData;
+import fr.matis.bddtr.model.data.BasicData;
+import fr.matis.bddtr.model.data.RealTimeData;
+import fr.matis.bddtr.model.transaction.Operation;
+import fr.matis.bddtr.model.transaction.OperationType;
+import fr.matis.bddtr.model.transaction.Transaction;
 import fr.matis.bddtr.simulator.api.ServerAPI;
-import fr.matis.bddtr.simulator.model.SimulationConfig;
-import fr.matis.bddtr.simulator.model.SimulationContents;
-import fr.matis.bddtr.simulator.model.data.AbstractData;
-import fr.matis.bddtr.simulator.model.data.BasicData;
-import fr.matis.bddtr.simulator.model.data.RealTimeData;
-import fr.matis.bddtr.simulator.model.transaction.Operation;
-import fr.matis.bddtr.simulator.model.transaction.OperationType;
-import fr.matis.bddtr.simulator.model.transaction.Transaction;
 
 public class SimulatorProcess {
 	private long stamp = 0;
@@ -47,7 +47,8 @@ public class SimulatorProcess {
 		}
 		if(nextUserTransaction == stamp){
 			createUserTransaction();
-			nextUserTransaction = stamp+PoissonUtil.nextEvent(config.getPoissonLambda()); 
+			nextUserTransaction = stamp+PoissonUtil.nextEvent(config.getPoissonLambda());
+			System.out.println("next user transaction "+nextUserTransaction);
 		}
 		for(RealTimeData data : contents.getRealTimeDatas()){
 			if(data.getNextUpdateStamp() == stamp){
@@ -58,7 +59,8 @@ public class SimulatorProcess {
 		server.doStep();
 	}
 	
-	public void stepDone(){
+	public void stepDone(long stamp){
+		this.stamp = stamp;
 		if(!stepByStep){
 			processStep();
 		}
@@ -67,8 +69,8 @@ public class SimulatorProcess {
 	private void updateRealTimeData(RealTimeData data) {
 		Transaction transaction = new Transaction();
 		transaction.addOperation(new Operation(OperationType.REALTIME_UPDATE, data));
+		transaction.calculateTimeout(stamp, config);
 		contents.addTransaction(transaction);
-		data.setStamp(stamp);
 		server.sendTransaction(transaction);
 	}
 
@@ -84,6 +86,7 @@ public class SimulatorProcess {
 			}
 			transaction.addOperation(new Operation(type, data));
 		}
+		transaction.calculateTimeout(stamp, config);
 		contents.addTransaction(transaction);
 		server.sendTransaction(transaction);
 	}
@@ -104,23 +107,6 @@ public class SimulatorProcess {
 		int minOperations = config.getOperationsByTransactionRange()[0];
 		int maxOperations = config.getOperationsByTransactionRange()[1] - minOperations + 1;
 		return minOperations + random.nextInt(maxOperations);
-	}
-
-	public static void main(String[] args) {
-		Map<OperationType, Integer> operationDurations = new HashMap<>();
-		operationDurations.put(OperationType.BASIC_READ, 5);
-		operationDurations.put(OperationType.BASIC_WRITE, 5);
-		operationDurations.put(OperationType.REALTIME_READ, 5);
-		operationDurations.put(OperationType.REALTIME_UPDATE, 5);
-		int simulationDuration = 1000;
-		double poissonLambda = 10;
-		int realTimeDataCount = 10;
-		int basicDataCount = 10;
-		int[] operationsByTransactionRange = {1,3};
-		int[] realTimeDurationRange = {10,50};
-		SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
-		SimulatorProcess process = new SimulatorProcess(config);
-		process.start();
 	}
 
 	public SimulationContents getContents() {

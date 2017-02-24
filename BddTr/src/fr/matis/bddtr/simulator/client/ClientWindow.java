@@ -13,9 +13,11 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JButton;
 import javax.swing.event.ChangeListener;
+import javax.xml.crypto.Data;
 
-import fr.matis.bddtr.simulator.model.SimulationConfig;
-import fr.matis.bddtr.simulator.model.transaction.OperationType;
+import fr.matis.bddtr.database.server.DatabaseProcess;
+import fr.matis.bddtr.model.SimulationConfig;
+import fr.matis.bddtr.model.transaction.OperationType;
 
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionListener;
@@ -316,7 +318,9 @@ public class ClientWindow {
 						(int) spinMaxRtPeriod.getValue()
 					};
 				SimulationConfig config = new SimulationConfig(operationDurations, simulationDuration, poissonLambda, realTimeDataCount, basicDataCount, operationsByTransactionRange, realTimeDurationRange);
+				DatabaseProcess.startDatabase(config);
 				SimulatorProcess process = new SimulatorProcess(config, chkStepByStep.isSelected());
+			
 				new Thread(new Runnable() {
 					@Override
 					public void run() {

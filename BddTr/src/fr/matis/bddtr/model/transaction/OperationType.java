@@ -1,4 +1,4 @@
-package fr.matis.bddtr.simulator.model.transaction;
+package fr.matis.bddtr.model.transaction;
 
 import java.util.Random;
 

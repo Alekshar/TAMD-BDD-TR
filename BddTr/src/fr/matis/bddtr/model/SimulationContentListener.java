@@ -1,4 +1,4 @@
-package fr.matis.bddtr.simulator.model;
+package fr.matis.bddtr.model;
 
 public interface SimulationContentListener {
 	void contentChanged(SimulationContents contents);

@@ -4,69 +4,59 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import fr.matis.bddtr.IAPI;
+import fr.matis.bddtr.database.api.ClientAPI;
+import fr.matis.bddtr.model.SimulationContents;
+import fr.matis.bddtr.model.data.AbstractData;
+import fr.matis.bddtr.model.transaction.Operation;
+import fr.matis.bddtr.model.transaction.Status;
+import fr.matis.bddtr.model.transaction.Transaction;
 import fr.matis.bddtr.simulator.client.SimulatorProcess;
-import fr.matis.bddtr.simulator.model.SimulationContents;
-import fr.matis.bddtr.simulator.model.data.AbstractData;
-import fr.matis.bddtr.simulator.model.transaction.Operation;
-import fr.matis.bddtr.simulator.model.transaction.Status;
-import fr.matis.bddtr.simulator.model.transaction.Transaction;
 
-public class ServerAPI {
+public class ServerAPI implements IAPI{
+	static ServerAPI instance;
 	private SimulationContents contents;
 	private SimulatorProcess process;
 	
-	private Queue<Operation> operations = new LinkedList<Operation>();
-	
 	public ServerAPI(SimulationContents contents, SimulatorProcess simulatorProcess) {
 		super();
+		instance = this;
 		this.contents = contents;
 		this.process = simulatorProcess;
 	}
 
+	@Override
 	public void sendTransaction(Transaction transaction){
-		System.out.println("transaction sent : "+transaction);
-		transactionHandled(transaction.getId());
-		for(Operation op : transaction.getOperations()){
-			operations.add(op);
-		}
+		ClientAPI.getInstance().sendTransaction(transaction);
+		System.out.println("client > transaction sent : "+transaction);
 	}
-	
+
+	@Override
 	public void announceData(AbstractData data){
-		System.out.println("data announced : "+data);
-		dataHandled(data.getId());
+		ClientAPI.getInstance().announceData(data);
+		System.out.println("client > data announced : "+data);
 	}
 
+	@Override
 	public void doStep(){
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if(!operations.isEmpty()){
-					operationUpdate(operations.poll().getId(), 
-							new Random().nextBoolean() ? Status.DONE : Status.REFUSED);	
-				}
-				stepDone();
-			}
-		}).start();
+		ClientAPI.getInstance().doStep();
 	}
 
-	public void transactionHandled(int trId){
-		Transaction transaction = contents.getTransaction(trId);
-		System.out.println("transaction handled : "+transaction);
-	}
-
-	public void dataHandled(int dataId){
-		System.out.println("data handled : "+dataId);
-	}
-	
+	@Override
 	public void operationUpdate(int opId, Status status){
 		Operation operation = contents.getOperation(opId);
 		operation.setStatus(status);
 		contents.fireChange();
-		System.out.println("operation updated : "+operation);
+		System.out.println("client > operation updated : "+operation);
 	}
 
-	public void stepDone(){
-		process.stepDone();
+	@Override
+	public void stepDone(long stamp){
+		process.stepDone(stamp);
+	}
+
+	public static ServerAPI getInstance(){
+		return instance;
 	}
 	
 }

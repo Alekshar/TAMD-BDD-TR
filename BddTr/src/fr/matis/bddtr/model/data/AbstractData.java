@@ -1,4 +1,4 @@
-package fr.matis.bddtr.simulator.model.data;
+package fr.matis.bddtr.model.data;
 
 public abstract class AbstractData {
 	private static int nextId = 1;

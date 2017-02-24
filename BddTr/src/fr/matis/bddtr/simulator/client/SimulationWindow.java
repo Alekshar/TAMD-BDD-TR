@@ -11,13 +11,13 @@ import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
-import fr.matis.bddtr.simulator.model.SimulationConfig;
-import fr.matis.bddtr.simulator.model.SimulationContentListener;
-import fr.matis.bddtr.simulator.model.SimulationContents;
-import fr.matis.bddtr.simulator.model.transaction.OperationType;
-import fr.matis.bddtr.simulator.model.transaction.Status;
-import fr.matis.bddtr.simulator.model.transaction.Transaction;
-import fr.matis.bddtr.simulator.model.transaction.TransactionType;
+import fr.matis.bddtr.model.SimulationConfig;
+import fr.matis.bddtr.model.SimulationContentListener;
+import fr.matis.bddtr.model.SimulationContents;
+import fr.matis.bddtr.model.transaction.OperationType;
+import fr.matis.bddtr.model.transaction.Status;
+import fr.matis.bddtr.model.transaction.Transaction;
+import fr.matis.bddtr.model.transaction.TransactionType;
 
 import javax.swing.JTable;
 import javax.swing.JButton;

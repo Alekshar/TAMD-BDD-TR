@@ -10,7 +10,7 @@ public class PoissonUtil {
 	public static int nextEvent(double lambda){
 		Random r = new Random();
 		double L = Math.exp(-lambda);
-		int k = 0;
+		int k = 1;
 		double p = 1.0;
 		do{
 			p = p * r.nextDouble();

@@ -1,20 +1,14 @@
-package fr.matis.bddtr.simulator.model;
+package fr.matis.bddtr.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
+import fr.matis.bddtr.model.data.BasicData;
+import fr.matis.bddtr.model.data.RealTimeData;
+import fr.matis.bddtr.model.transaction.Operation;
+import fr.matis.bddtr.model.transaction.Transaction;
 import fr.matis.bddtr.simulator.api.ServerAPI;
-import fr.matis.bddtr.simulator.client.SimulationTableModel;
-import fr.matis.bddtr.simulator.model.data.BasicData;
-import fr.matis.bddtr.simulator.model.data.RealTimeData;
-import fr.matis.bddtr.simulator.model.transaction.Operation;
-import fr.matis.bddtr.simulator.model.transaction.Status;
-import fr.matis.bddtr.simulator.model.transaction.Transaction;
-import fr.matis.bddtr.simulator.model.transaction.TransactionType;
 
 public class SimulationContents {
 	List<Transaction> transactions = new ArrayList<Transaction>();

@@ -1,10 +1,10 @@
-package fr.matis.bddtr.simulator.model;
+package fr.matis.bddtr.model;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.matis.bddtr.simulator.model.transaction.OperationType;
+import fr.matis.bddtr.model.transaction.OperationType;
 
 public class SimulationConfig {
 	private Map<OperationType, Integer> operationDurations = new HashMap<OperationType, Integer>();

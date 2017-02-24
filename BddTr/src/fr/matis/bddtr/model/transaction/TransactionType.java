@@ -1,4 +1,4 @@
-package fr.matis.bddtr.simulator.model.transaction;
+package fr.matis.bddtr.model.transaction;
 
 public enum TransactionType {
 	USER,

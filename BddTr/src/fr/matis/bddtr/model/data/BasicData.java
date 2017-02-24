@@ -1,4 +1,4 @@
-package fr.matis.bddtr.simulator.model.data;
+package fr.matis.bddtr.model.data;
 
 public class BasicData extends AbstractData {
 

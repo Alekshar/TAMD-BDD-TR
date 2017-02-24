@@ -1,11 +1,17 @@
-package fr.matis.bddtr.simulator.model.transaction;
+package fr.matis.bddtr.model.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import fr.matis.bddtr.model.SimulationConfig;
+import fr.matis.bddtr.model.data.RealTimeData;
 
 public class Transaction {
-	private static int nextId;
+	private static final double TIMEOUT_COEFF = 2;
+	private static int nextId=0;
 	private int id;
+	private long timeout;
 	private List<Operation> operations = new ArrayList<Operation>();
 
 	public Transaction() {
@@ -34,6 +40,8 @@ public class Transaction {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Transaction [id=");
 		builder.append(id);
+		builder.append(", timeout=");
+		builder.append(timeout);
 		builder.append(", operations=");
 		builder.append(operations);
 		builder.append("]");
@@ -54,5 +62,21 @@ public class Transaction {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public long getTimeout() {
+		return timeout;
+	}
 	
+	public void calculateTimeout(long stamp, SimulationConfig config){
+		if(operations.get(0).getType() == OperationType.REALTIME_UPDATE){
+			this.timeout = stamp + ((RealTimeData) operations.get(0).getData()).getDuration();
+			return;
+		}
+		long timeout = 0;
+		for(Operation op : operations){
+			timeout += config.getOperationDurations().get(op.getType());
+		}
+		timeout = timeout + (long) (((double) timeout) * new Random().nextDouble() * TIMEOUT_COEFF);
+		this.timeout = stamp + timeout;
+	}
 }

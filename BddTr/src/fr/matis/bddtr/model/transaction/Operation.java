@@ -1,6 +1,6 @@
-package fr.matis.bddtr.simulator.model.transaction;
+package fr.matis.bddtr.model.transaction;
 
-import fr.matis.bddtr.simulator.model.data.AbstractData;
+import fr.matis.bddtr.model.data.AbstractData;
 
 public class Operation {
 	private static int nextId;

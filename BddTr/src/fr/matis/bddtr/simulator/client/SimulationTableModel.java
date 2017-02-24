@@ -2,11 +2,11 @@ package fr.matis.bddtr.simulator.client;
 
 import javax.swing.table.DefaultTableModel;
 
-import fr.matis.bddtr.simulator.model.SimulationConfig;
-import fr.matis.bddtr.simulator.model.SimulationContentListener;
-import fr.matis.bddtr.simulator.model.SimulationContents;
-import fr.matis.bddtr.simulator.model.transaction.Operation;
-import fr.matis.bddtr.simulator.model.transaction.Transaction;
+import fr.matis.bddtr.model.SimulationConfig;
+import fr.matis.bddtr.model.SimulationContentListener;
+import fr.matis.bddtr.model.SimulationContents;
+import fr.matis.bddtr.model.transaction.Operation;
+import fr.matis.bddtr.model.transaction.Transaction;
 
 public class SimulationTableModel extends DefaultTableModel implements SimulationContentListener {
 	private static final long serialVersionUID = -7314372016872242028L;
