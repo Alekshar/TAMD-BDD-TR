@@ -18,6 +18,7 @@ import fr.matis.bddtr.model.transaction.OperationType;
 import fr.matis.bddtr.model.transaction.Status;
 import fr.matis.bddtr.model.transaction.Transaction;
 import fr.matis.bddtr.model.transaction.TransactionType;
+import fr.matis.bddtr.simulator.api.ServerAPI;
 
 import javax.swing.JTable;
 import javax.swing.JButton;
@@ -118,6 +119,8 @@ public class SimulationWindow {
 		panel_3.add(lblGlobal);
 		btnNextStep.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				btnNextStep.setEnabled(false);
+				ServerAPI.getInstance().setStepButton(btnNextStep);
 				process.processStep();
 				lblCurrentStep.setText("current step : "+process.getStamp());
 			}

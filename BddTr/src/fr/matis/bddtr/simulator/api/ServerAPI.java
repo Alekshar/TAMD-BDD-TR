@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import javax.swing.JButton;
+
 import fr.matis.bddtr.IAPI;
 import fr.matis.bddtr.database.api.ClientAPI;
 import fr.matis.bddtr.model.SimulationContents;
@@ -17,6 +19,7 @@ public class ServerAPI implements IAPI{
 	static ServerAPI instance;
 	private SimulationContents contents;
 	private SimulatorProcess process;
+	private JButton stepButton;
 	
 	public ServerAPI(SimulationContents contents, SimulatorProcess simulatorProcess) {
 		super();
@@ -52,11 +55,18 @@ public class ServerAPI implements IAPI{
 
 	@Override
 	public void stepDone(long stamp){
+		if(stepButton != null){
+			stepButton.setEnabled(true);
+		}
 		process.stepDone(stamp);
 	}
 
 	public static ServerAPI getInstance(){
 		return instance;
+	}
+
+	public void setStepButton(JButton button) {
+		this.stepButton = button;
 	}
 	
 }
